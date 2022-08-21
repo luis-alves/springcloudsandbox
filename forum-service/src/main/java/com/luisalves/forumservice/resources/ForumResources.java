@@ -12,6 +12,11 @@ public class ForumResources {
 
     @GetMapping("/{userId}")
     public PostResponse getPostByUser(@PathVariable("userId") Integer userId) {
+        //try {
+        //    Thread.sleep(6000);
+        //} catch (InterruptedException e) {
+        //    throw new RuntimeException(e);
+        //}
         return PostResponse.builder()
                            .id(userId)
                            .messsage("This is a post for user id: " + userId)

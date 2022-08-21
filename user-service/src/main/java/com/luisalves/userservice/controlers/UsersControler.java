@@ -1,9 +1,9 @@
 package com.luisalves.userservice.controlers;
 
 import com.luisalves.userservice.exceptions.UserNotFoundException;
-import com.luisalves.userservice.model.PostResponse;
 import com.luisalves.userservice.model.UserRequest;
 import com.luisalves.userservice.model.UserResponse;
+import com.luisalves.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,26 +21,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @RestController
 @RefreshScope
 @RequestMapping("/users")
 public class UsersControler {
 
-    @Value("${my.greeting: default value}")
-    private String value;
-
     @Autowired
-    private RestTemplate restTemplate;
+    private UserService userService;
 
     @Operation(summary = "Delete existing User")
     @DeleteMapping("/{id}")
@@ -62,19 +53,7 @@ public class UsersControler {
     @Operation(summary = "Get existing Users")
     @GetMapping
     public Collection<UserResponse> getAllUser() {
-
-        List<PostResponse> postResponse
-                = Stream.of(1, 2)
-                        .map(this::getForObject)
-                        .toList();
-
-        return List.of(new UserResponse(1L, value, LocalDate.now(), postResponse.get(0)),
-                       new UserResponse(2L, "Silvia", LocalDate.now(), postResponse.get(1)));
-    }
-
-    private PostResponse getForObject(Integer userId) {
-        return restTemplate.getForObject("http://forum-service/forums/" + userId,
-                PostResponse.class);
+        return userService.getUserInfo();
     }
 
     @ApiResponses(value = {
